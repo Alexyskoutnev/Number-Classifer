@@ -83,11 +83,10 @@ class Network(object):
 
     def evaluate(self, test_data):
         """
-        :param test_data:
-        :return:
+        :param test_data: Tests the Neural Network using the each data point in test data
+        :return: returns the number of correctly identified data points
         """
-        test_results = [(np.argmax(self.feedforward(x)), y)
-                        for (x, y) in test_data]
+        test_results = [(np.argmax(self.feedforward(x)), y) for (x, y) in test_data]
         return sum(int(x == y) for (x, y) in test_results)
 
     def cost_derivative(self, output_activations, y):
