@@ -35,7 +35,7 @@ class Network(object):
             for sample in mini_samples:
                 self.update_mini_sample(sample, eta)
             if test_data:
-                print("Epoch {0}: {1} / {2}".format(i, self.evualate(test_data)/ n_test))
+                print("Epoch {0}: {1:.02f}%".format(i, (self.evaluate(test_data)/n_test*100)))
             else:
                 print("Epoch {0} complete".format(i))
 
@@ -73,7 +73,7 @@ class Network(object):
         delta = self.cost_derivative(activations[-1], y) * self.sigmoid_prime(zs[-1])
         nabla_b[-1] = delta
         nabla_w[-1] = np.dot(delta, activations[-2].transpose())
-        for l in range(2, self.num_layers):
+        for l in range(2, self.num_layer):
             z = zs[-l]
             sp = self.sigmoid_prime(z)
             delta = np.dot(self.weights[-l + 1].transpose(), delta) * sp
@@ -91,7 +91,7 @@ class Network(object):
 
     def cost_derivative(self, output_activations, y):
         """
-        :param output_activations:
+        :param output_activations: The input activation
         :param y:
         :return:
         """
@@ -110,8 +110,3 @@ class Network(object):
         :return: output derivative of sigmoidized numpy array of size (n,1)
         """
         return self.sigmoid(z)*(1 - self.sigmoid(z))
-
-network = Network([2,3,2])
-# print(network.biases)
-# print(network.weights)
-print(network.sigmoid(np.array([1,2,3,4])))

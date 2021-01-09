@@ -7,8 +7,10 @@ def read_data():
     Reads the mnist file containing handwritten samples of number 0-9
     :return: training data, validation data, and test data
     """
-    file = gzip.open("../data/mnist.pkl.gz", "rb")
-    training_data, validation_data, test_data = pickle.load(file)
+    file = gzip.open("numbers_dataset.gz", "rb")
+    encode_file = pickle._Unpickler(file)
+    encode_file.encoding = 'latin1'
+    training_data, validation_data, test_data = encode_file.load()
     file.close()
     return training_data, validation_data, test_data
 
@@ -20,11 +22,11 @@ def load_data_wrapper():
     train, validation, test = read_data()
     training_inputs = [np.reshape(x, (784, 1)) for x in train[0]]
     training_outputs = [vectorized(y) for y in train[1]]
-    training_data = zip(training_inputs, training_outputs)
+    training_data = list(zip(training_inputs, training_outputs))
     validation_inputs = [np.reshape(x, (784, 1)) for x in validation[0]]
-    validation_data = zip(validation_inputs, validation[1])
+    validation_data = list(zip(validation_inputs, validation[1]))
     test_inputs = [np.reshape(x, (784, 1)) for x in test[0]]
-    test_data = zip(test_inputs, test[1])
+    test_data = list(zip(test_inputs, test[1]))
     return training_data, validation_data, test_data
 
 def vectorized(j):
