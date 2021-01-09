@@ -16,10 +16,11 @@ class Network(object):
         for b, w in zip(self.biases, self.weights):
             v = self.sigmoid(np.dot(w, v) + b)
         return v
+
     def SGN(self, training_data, epochs, mini_sample_size, eta, test_data = None):
         '''
         :param training_data: the training data-set
-        :param epochs: Array of epochs
+        :param epochs: Number of epochs to train for
         :param mini_sample_size: The size of sample backpropagation
         :param eta: learning rate
         :param test_data: the test data-set
@@ -37,6 +38,7 @@ class Network(object):
                 print("Epoch {0}: {1} / {2}".format(i, self.evualate(test_data)/ n_test))
             else:
                 print("Epoch {0} complete".format(i))
+
     def update_mini_sample(self, sample, eta):
         """
         :param sample: sample from mini sample
