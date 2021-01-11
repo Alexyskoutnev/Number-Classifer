@@ -1,6 +1,6 @@
 import numpy as np
 import random
-class Network(object):
+class Network:
 
     def __init__(self, sizes):
         self.num_layer = len(sizes)
