@@ -4,13 +4,12 @@ import numpy as np
 import time
 from matplotlib import pyplot as plt
 
-grey_img = cv2.imread('Sample_Number.jpg', cv2.IMREAD_GRAYSCALE)
 
 
 Lower_Black = np.array([0, 0, 0])
 Upper_Black = np.array([100, 100, 100])
 center = None
-img = cv2.imread('Sample_Number_3.jpg',1)
+img = cv2.imread('Sample_Number.jpg',1)
 img = cv2.resize(img, (500, 500))
 hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 kernel = np.ones((3, 3), np.uint8)
@@ -20,32 +19,46 @@ mask_dilate = cv2.dilate(mask_morph_open, kernel, iterations=2)
 mask = mask_dilate
 res = cv2.bitwise_and(img, img, mask=mask)
 # mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
-cv2.imshow('grey', img)
-cv2.imshow("inrange", mask_inrange)
-#cv2.imshow("erode", mask_erode)
-cv2.imshow("morph open", mask_morph_open)
-#cv2.imshow("morph closed", mask_morph_closed)
-cv2.imshow("mask dilate", mask_dilate)
-cv2.imshow("res", res)
+# cv2.imshow('grey', img)
+# cv2.imshow("inrange", mask_inrange)
+# #cv2.imshow("erode", mask_erode)
+# cv2.imshow("morph open", mask_morph_open)
+# #cv2.imshow("morph closed", mask_morph_closed)
+# # cv2.imshow("mask dilate", mask_dilate)
+# # cv2.imshow("res", res)
 
-contours, heir = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+contours, heir = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2:]
 print("Number of contours: " + str(len(contours)))
-cv2.drawContours(img, contours, -1, [255, 0, 0], 3)
+# for x in contours:
+#     print(x, "contour")
+#cv2.drawContours(img, contours, -1, [255, 0, 0], 3)
 cv2.imshow('grey', img)
 
 if (len(contours) >= 1):
-    cnt = max(contours, key = cv2.contourArea)
-    ((x, y), radius) = cv2.minEnclosingCircle(np.float32(cnt))
-    cv2.circle(img, center, 5, (0, 0, 255), -1)
-    left_corner_x, left_corner_y = int(int(x) - radius), int(int(y) - radius)
-    right_corner_x, right_corner_y = int(int(x) + radius), int(int(y) + radius)
-    print(left_corner_x, "left corner_x")
-    print(left_corner_y, "left corner_y")
-    print(right_corner_x, "left corner_x")
-    print(right_corner_y, "left corner_y")
-    cv2.rectangle(img, (left_corner_x,left_corner_y), (right_corner_x, right_corner_y), (0,0,0), 2)
-    print((x,y))
-    print(radius)
+    for digit in contours:
+        num = 0
+        filename = 'EXAMPLE_OUTPUT' + str(num) + '.jpg'
+        x, y, h, w = cv2.boundingRect(np.float32(digit))
+        # M = cv2.moments(digit)
+        # center_x = int(M["m10"] / M["m00"])
+        # center_y = int(M["m01"] / M["m00"])
+        # left_corner_x, left_corner_y = int(center_x  - radius), int(center_y - radius)
+        # right_corner_x, right_corner_y = int(center_x  + radius), int(center_y + radius)
+        # print(left_corner_x, "left corner_x")
+        # print(left_corner_y, "left corner_y")
+        # print(right_corner_x, "left corner_x")
+        # print(right_corner_y, "left corner_y")
+        # print((x,y))
+        # print(radius)K
+        digit_image = img[y:y + w, x:x + h]
+        gray_digit_image = cv2.cvtColor(digit_image, cv2.COLOR_BGR2GRAY)
+        gray_digit_image = cv2.resize(gray_digit_image, (28, 28))
+        cv2.imwrite(filename, gray_digit_image)
+        cv2.imshow("Final Image111", gray_digit_image)
+        # cv2.rectangle(img, (left_corner_x,left_corner_y), (right_corner_x, right_corner_y), (0,255,0), 2)
+        # px = img[100:150, 100:150]
+        cv2.rectangle(img, (x, y), (x + h, y + w), (0, 255, 0), 2)
+        num += 1
 
 cv2.imshow("Final Image", img)
 cv2.waitKey(0)
