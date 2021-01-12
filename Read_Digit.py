@@ -55,8 +55,6 @@ if (len(contours) >= 1):
         gray_digit_image = cv2.resize(gray_digit_image, (28, 28))
         cv2.imwrite(filename, gray_digit_image)
         cv2.imshow("Final Image111", gray_digit_image)
-        # cv2.rectangle(img, (left_corner_x,left_corner_y), (right_corner_x, right_corner_y), (0,255,0), 2)
-        # px = img[100:150, 100:150]
         cv2.rectangle(img, (x, y), (x + h, y + w), (0, 255, 0), 2)
         num += 1
 
