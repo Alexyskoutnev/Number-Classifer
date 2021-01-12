@@ -5,64 +5,60 @@ import time
 from matplotlib import pyplot as plt
 
 
+def read(Network):
+    Lower_Black = np.array([0, 0, 0])
+    Upper_Black = np.array([100, 100, 100])
+    center = None
+    img = cv2.imread('Sample_Number.jpg',1)
+    img = cv2.resize(img, (500, 500))
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    kernel = np.ones((3, 3), np.uint8)
+    mask_inrange = cv2.inRange(hsv, Lower_Black, Upper_Black)
+    mask_morph_open = cv2.morphologyEx(mask_inrange, cv2.MORPH_OPEN, kernel)
+    mask_dilate = cv2.dilate(mask_morph_open, kernel, iterations=2)
+    mask = mask_dilate
+    res = cv2.bitwise_and(img, img, mask=mask)
+    array_digits_data = []
+    # mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+    # cv2.imshow('grey', img)
+    # cv2.imshow("inrange", mask_inrange)
+    # #cv2.imshow("erode", mask_erode)
+    # cv2.imshow("morph open", mask_morph_open)
+    # #cv2.imshow("morph closed", mask_morph_closed)
+    # # cv2.imshow("mask dilate", mask_dilate)
+    # # cv2.imshow("res", res)
 
-Lower_Black = np.array([0, 0, 0])
-Upper_Black = np.array([100, 100, 100])
-center = None
-img = cv2.imread('Multiple_Numbers.jpg',1)
-img = cv2.resize(img, (500, 500))
-hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-kernel = np.ones((3, 3), np.uint8)
-mask_inrange = cv2.inRange(hsv, Lower_Black, Upper_Black)
-mask_morph_open = cv2.morphologyEx(mask_inrange, cv2.MORPH_OPEN, kernel)
-mask_dilate = cv2.dilate(mask_morph_open, kernel, iterations=2)
-mask = mask_dilate
-res = cv2.bitwise_and(img, img, mask=mask)
-# mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
-# cv2.imshow('grey', img)
-# cv2.imshow("inrange", mask_inrange)
-# #cv2.imshow("erode", mask_erode)
-# cv2.imshow("morph open", mask_morph_open)
-# #cv2.imshow("morph closed", mask_morph_closed)
-# # cv2.imshow("mask dilate", mask_dilate)
-# # cv2.imshow("res", res)
+    contours, heir = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2:]
+    print("Number of contours: " + str(len(contours)))
+    # for x in contours:
+    #     print(x, "contour")
+    #cv2.drawContours(img, contours, -1, [255, 0, 0], 3)
+    cv2.imshow('grey', img)
 
-contours, heir = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2:]
-print("Number of contours: " + str(len(contours)))
-# for x in contours:
-#     print(x, "contour")
-#cv2.drawContours(img, contours, -1, [255, 0, 0], 3)
-cv2.imshow('grey', img)
+    if (len(contours) >= 1):
+        for digit in contours:
+            num = 0
+            filename = 'EXAMPLE_OUTPUT' + str(num) + '.jpg'
+            x, y, h, w = cv2.boundingRect(np.float32(digit))
+            digit_image = img[y:y + w, x:x + h]
+            gray_digit_image = cv2.cvtColor(digit_image, cv2.COLOR_BGR2GRAY)
+            gray_digit_image = cv2.resize(gray_digit_image, (28, 28))
+            digit_data = np.array(gray_digit_image)
+            digit_data = digit_data.astype('float32').flatten()/ 255.0
+            cv2.imwrite(filename, gray_digit_image)
+            # digit_data = gray_digit_image.reshape(784,1).flatten()/255.0
+            print(digit_data.shape, "input")
+            array_digits_data.append(digit_data)
+            cv2.imshow("Final Image111", gray_digit_image)
+            cv2.rectangle(img, (x, y), (x + h, y + w), (0, 255, 0), 2)
+            num += 1
+            print(Network.feedforward(digit_data).shape, "output")
+            print(np.argmax(Network.feedforward(digit_data)[0]), "Output")
 
-if (len(contours) >= 1):
-    for digit in contours:
-        num = 0
-        filename = 'EXAMPLE_OUTPUT' + str(num) + '.jpg'
-        x, y, h, w = cv2.boundingRect(np.float32(digit))
-        # M = cv2.moments(digit)
-        # center_x = int(M["m10"] / M["m00"])
-        # center_y = int(M["m01"] / M["m00"])
-        # left_corner_x, left_corner_y = int(center_x  - radius), int(center_y - radius)
-        # right_corner_x, right_corner_y = int(center_x  + radius), int(center_y + radius)
-        # print(left_corner_x, "left corner_x")
-        # print(left_corner_y, "left corner_y")
-        # print(right_corner_x, "left corner_x")
-        # print(right_corner_y, "left corner_y")
-        # print((x,y))
-        # print(radius)K
-        digit_image = img[y:y + w, x:x + h]
-        gray_digit_image = cv2.cvtColor(digit_image, cv2.COLOR_BGR2GRAY)
-        gray_digit_image = cv2.resize(gray_digit_image, (28, 28))
-        cv2.imwrite(filename, gray_digit_image)
-        cv2.imshow("Final Image111", gray_digit_image)
-        cv2.rectangle(img, (x, y), (x + h, y + w), (0, 255, 0), 2)
-        num += 1
-
-cv2.imshow("Final Image", img)
-cv2.waitKey(0)
-cv2.destroyWindow()
-
-
+    cv2.imshow("Final Image", img)
+    cv2.waitKey(0)
+    cv2.destroyWindow()
+    return(array_digits_data)
 
 
 # cap = cv2.VideoCapture(0)
