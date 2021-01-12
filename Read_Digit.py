@@ -9,7 +9,7 @@ from matplotlib import pyplot as plt
 Lower_Black = np.array([0, 0, 0])
 Upper_Black = np.array([100, 100, 100])
 center = None
-img = cv2.imread('Sample_Number.jpg',1)
+img = cv2.imread('Multiple_Numbers.jpg',1)
 img = cv2.resize(img, (500, 500))
 hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 kernel = np.ones((3, 3), np.uint8)
