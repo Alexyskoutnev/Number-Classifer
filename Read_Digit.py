@@ -3,62 +3,68 @@ import cv2
 import numpy as np
 import time
 from matplotlib import pyplot as plt
-
+#cap = cv2.VideoCapture('http://192.168.18.37:8090/video')
 
 def read(Network):
+    camera = cv2.VideoCapture('http://10.0.0.198:8080/video')
     Lower_Black = np.array([0, 0, 0])
     Upper_Black = np.array([100, 100, 100])
     center = None
-    img = cv2.imread('S.jpg',1)
-    img = cv2.resize(img, (500, 500))
-    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    kernel = np.ones((3, 3), np.uint8)
-    mask_inrange = cv2.inRange(hsv, Lower_Black, Upper_Black)
-    mask_morph_open = cv2.morphologyEx(mask_inrange, cv2.MORPH_OPEN, kernel)
-    mask_dilate = cv2.dilate(mask_morph_open, kernel, iterations=2)
-    mask = mask_dilate
-    res = cv2.bitwise_and(img, img, mask=mask)
-    array_digits_data = []
-    # mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
-    # cv2.imshow('grey', img)
-    # cv2.imshow("inrange", mask_inrange)
-    # #cv2.imshow("erode", mask_erode)
-    # cv2.imshow("morph open", mask_morph_open)
-    # #cv2.imshow("morph closed", mask_morph_closed)
-    # # cv2.imshow("mask dilate", mask_dilate)
-    # # cv2.imshow("res", res)
+    while True:
+        # img = cv2.imread('Multiple_Numbers.jpg',1)
+        (_, img) = camera.read()
+        #img = cv2.flip(img, 1)
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        kernel = np.ones((2, 2), np.uint8)
+        mask_inrange = cv2.inRange(hsv, Lower_Black, Upper_Black)
+        #mask_morph_open = cv2.morphologyEx(mask_inrange, cv2.MORPH_OPEN, kernel)
+        #mask_dilate = cv2.dilate(mask_inrange, kernel, iterations=2)
+        #mask = mask_dilate
+        res = cv2.bitwise_and(img, img, mask=mask_inrange)
+        array_digits_data = []
+        #mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+        cv2.imshow("inrange", mask_inrange)
+        #cv2.imshow("erode", mask_erode)
+#        cv2.imshow("morph open", mask_morph_open)
+        #cv2.imshow("morph closed", mask_morph_closed)
+        # cv2.imshow("mask dilate", mask_dilate)
+        # cv2.imshow("res", res)
 
-    contours, heir = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2:]
-    print("Number of contours: " + str(len(contours)))
-    # for x in contours:
-    #     print(x, "contour")
-    #cv2.drawContours(img, contours, -1, [255, 0, 0], 3)
-    cv2.imshow('grey', img)
+        contours, heir = cv2.findContours(mask_inrange, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2:]
+        print("Number of contours: " + str(len(contours)))
+        cv2.imshow('grey', img)
 
-    if (len(contours) >= 1):
-        for digit in contours:
-            num = 0
-            filename = 'EXAMPLE_OUTPUT' + str(num) + '.jpg'
-            x, y, h, w = cv2.boundingRect(np.float32(digit))
-            digit_image = img[y:y + w, x:x + h]
-            gray_digit_image = cv2.cvtColor(digit_image, cv2.COLOR_BGR2GRAY)
-            gray_digit_image = cv2.resize(gray_digit_image, (28, 28))
-            digit_data = np.array(gray_digit_image)
-            digit_data = digit_data.astype('float32').flatten()/ 255.0
-            digit_data_new = digit_data.reshape(784,1)
-            cv2.imwrite(filename, gray_digit_image)
-            array_digits_data.append(digit_data_new)
-            cv2.imshow("Final Image111", gray_digit_image)
-            cv2.rectangle(img, (x, y), (x + h, y + w), (0, 255, 0), 2)
-            num += 1
-            output_digit = np.argmax(Network.feedforward(digit_data_new))
-            print(Network.feedforward(digit_data_new).shape, "output")
-            print(np.argmax(Network.feedforward(digit_data_new)), "Output")
+        if (len(contours) >= 1):
+            for digit in contours:
+                num = 0
+                filename = 'EXAMPLE_OUTPUT' + str(num) + '.jpg'
+                x, y, h, w = cv2.boundingRect(np.float32(digit))
+                digit_image = img[y:y + w, x:x + h]
+                gray_digit_image = cv2.cvtColor(digit_image, cv2.COLOR_BGR2GRAY)
+                gray_digit_image = cv2.resize(gray_digit_image, (28, 28))
+                digit_data = np.array(gray_digit_image)
+                digit_data = digit_data.astype('float32').flatten()/ 255.0
+                digit_data_new = digit_data.reshape(784,1)
+                cv2.imwrite(filename, gray_digit_image)
+                array_digits_data.append(digit_data_new)
+                cv2.imshow("Final Image111", gray_digit_image)
+                num += 1
+                output_digit = np.argmax(Network.feedforward(digit_data_new))
+                # print(Network.feedforward(digit_data_new), "output")
+                # print(np.argmax(Network.feedforward(digit_data_new)), "Output")
+                cv2.rectangle(img, (x, y), (x + h, y + w), (0, 255, 0), 2)
+                cv2.putText(img, str(output_digit), (x + h, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36, 255, 12), 2)
 
-    cv2.imshow("Final Image", img)
-    cv2.waitKey(0)
+        #Show Image
+        resized_image = cv2.resize(img, (800, 800))
+        cv2.imshow("Digits Recognition Real Time", resized_image)
+
+        if cv2.waitKey(1) & 0xFF == ord("q"):
+            break
+
+    #Turn off Camera
+    camera.release()
     cv2.destroyWindow()
-    return(array_digits_data)
 
 
 # cap = cv2.VideoCapture(0)

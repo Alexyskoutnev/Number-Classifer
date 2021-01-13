@@ -87,8 +87,6 @@ class Network:
         :return: returns the number of correctly identified data points
         """
         test_results = [(np.argmax(self.feedforward(x)), y) for (x, y) in test_data]
-        print([(np.argmax(self.feedforward(x)), y) for (x, y) in test_data])
-        print(sum(int(x == y) for (x, y) in test_results))
         return sum(int(x == y) for (x, y) in test_results)
 
     def cost_derivative(self, output_activations, y):
