@@ -45,15 +45,14 @@ def read(Network):
             gray_digit_image = cv2.resize(gray_digit_image, (28, 28))
             digit_data = np.array(gray_digit_image)
             digit_data = digit_data.astype('float32').flatten()/ 255.0
+            digit_data_new = digit_data.reshape(784,1)
             cv2.imwrite(filename, gray_digit_image)
-            # digit_data = gray_digit_image.reshape(784,1).flatten()/255.0
-            print(digit_data.shape, "input")
-            array_digits_data.append(digit_data)
+            array_digits_data.append(digit_data_new)
             cv2.imshow("Final Image111", gray_digit_image)
             cv2.rectangle(img, (x, y), (x + h, y + w), (0, 255, 0), 2)
             num += 1
-            print(Network.feedforward(digit_data).shape, "output")
-            print(np.argmax(Network.feedforward(digit_data)[0]), "Output")
+            print(Network.feedforward(digit_data_new).shape, "output")
+            print(np.argmax(Network.feedforward(digit_data_new)), "Output")
 
     cv2.imshow("Final Image", img)
     cv2.waitKey(0)
