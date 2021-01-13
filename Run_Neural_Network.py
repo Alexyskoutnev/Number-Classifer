@@ -5,5 +5,5 @@ from Read_Digit import read
 
 network = Network([784, 50, 10])
 training_data, validation_data, test_data = load_data_wrapper()
-network.SGN(training_data, 30, 15, 1, test_data= test_data)
+network.SGN(training_data, 45, 10, 1.5, test_data= test_data)
 read(network)
