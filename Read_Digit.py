@@ -9,7 +9,7 @@ def read(Network):
     Lower_Black = np.array([0, 0, 0])
     Upper_Black = np.array([100, 100, 100])
     center = None
-    img = cv2.imread('Sample_Number.jpg',1)
+    img = cv2.imread('S.jpg',1)
     img = cv2.resize(img, (500, 500))
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     kernel = np.ones((3, 3), np.uint8)
@@ -51,6 +51,7 @@ def read(Network):
             cv2.imshow("Final Image111", gray_digit_image)
             cv2.rectangle(img, (x, y), (x + h, y + w), (0, 255, 0), 2)
             num += 1
+            output_digit = np.argmax(Network.feedforward(digit_data_new))
             print(Network.feedforward(digit_data_new).shape, "output")
             print(np.argmax(Network.feedforward(digit_data_new)), "Output")
 
