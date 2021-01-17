@@ -3,7 +3,7 @@ from mnist_reader import load_data_wrapper
 from Read_Digit import read
 
 
-network = Network([784, 100, 50, 25, 10])
+network = Network([784, 30, 10])
 training_data, validation_data, test_data = load_data_wrapper()
-network.SGN(training_data, 30, 10, 2, test_data= test_data)
+network.SGN(training_data, 30, 10, .5, lmda= 5.0, test_data= test_data)
 read(network)
