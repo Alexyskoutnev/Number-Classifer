@@ -112,9 +112,9 @@ class Network:
         for x, y in sample:
             delta_nabla_b, delta_nabla_w = self.backprop(x, y)
             nabla_b = [nb+dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
-            nabla_w = [nw + dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
-        self.weights = [(1-eta*(lmda/n))*w - (eta/len(sample)) for w, nw in zip(self.weights, nabla_w)]
-        self.biases = [b - (eta/len(sample))*nb for b, nb in zip(self.biases, nabla_b)]
+            nabla_w = [nw+dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
+        self.weights = [(1-eta*(lmda/n))*w-(eta/len(sample))*nw for w, nw in zip(self.weights, nabla_w)]
+        self.biases = [b-(eta/len(sample))*nb for b, nb in zip(self.biases, nabla_b)]
 
     def backprop(self, x, y):
         """
@@ -128,7 +128,7 @@ class Network:
         activations = [x]
         zs = []
         for b, w in zip(self.biases, self.weights):
-            z = np.dot(w, activation) + b
+            z = np.dot(w, activation)+b
             zs.append(z)
             activation = sigmoid(z)
             activations.append(activation)
