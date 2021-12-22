@@ -1,19 +1,30 @@
-import urllib.request
-import cv2
-import numpy as np
+# import urllib.request
+# import cv2
+# import numpy as np
 import time
 import math
 
+import requests
+import cv2
+import numpy as np
+import imutils
+
 def read(Network):
     camera = cv2.VideoCapture(0)
+    # print(camera)
     Lower_Black = np.array([0, 0, 0])
     Upper_Black = np.array([100, 100, 100])
     center = None
-    while camera.isOpened():
+    while True:
+        # img_resp = requests.get(url)
+        # img_arr = np.array(bytearray(img_resp.content), dtype=np.uint8)
+        # img = cv2.imdecode(img_arr, -1)
+        # print(img)
+        # cv2.imshow("Digits Recognition Real Time", img)
         (_, img) = camera.read()
-        #img = cv2.imread('Sample_Number_3.jpg', 1)
-        #img = cv2.flip(img, 1)
-        gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+        # img = cv2.imread('Sample_Number_3.jpg', 1)
+        # img = cv2.flip(img, 1)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         kernel = np.ones((2, 2), np.uint8)
         _, thresh = cv2.threshold(gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
         thresh = cv2.erode(thresh, kernel, iterations=1)
@@ -40,16 +51,17 @@ def read(Network):
             pass
 
         #Show Image
+        print("showing ")
         resized_image = cv2.resize(img, (1000, 1000))
         cv2.imshow("Digits Recognition Real Time", resized_image)
 
         #Break Image
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
-
+    print("not open")
     #Turn off Camera
     camera.release()
-    cv2.destroyWindow()
+    # cv2.destroyWindow()
 
 def get_rectangles(cont, hier):
     try:
